@@ -19,6 +19,18 @@ class Heater:
         self.last_observed_at: datetime = self.started_at
         self.stopped_at: datetime = None
 
+    def turn_off(self):
+        self.on = False
+        self.started_at: datetime = None
+        self.last_observed_at: datetime = None
+        self.stopped_at: datetime = datetime.utcnow()
+
+    def temperature(self):
+        if self.on:
+            self._update()
+
+        return self.substance.temperature
+
     def _update(self):
         current_time = datetime.utcnow()
         time_delta = current_time - self.last_observed_at
