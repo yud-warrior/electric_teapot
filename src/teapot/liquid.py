@@ -9,9 +9,15 @@ class Liquid:
     heat_capacity: float # J/(kg * K)
     boiling_temperature: float # degree Celsius
     vaporization_heat: float # J/(kg * K)
+    mass: float # kg
 
 
 class Water(Liquid):
+
+    DENSITY = 1.0
+    HEAT_CAPACITY = 4180.6
+    BOILING_TEMPERATURE = 100.
+    VAPORIZATION_HEAT = 2.3e6
 
     def __init__(
             self,
@@ -21,11 +27,11 @@ class Water(Liquid):
         super.__init__(
             volume=volume,
             temperature=temperature,
-            density=1.0,
-            heat_capacity=4180.6,
-            boiling_temperature=100,
-            vaporization_heat=2.3e6
+            density=Water.DENSITY,
+            heat_capacity=Water.HEAT_CAPACITY,
+            boiling_temperature=Water.BOILING_TEMPERATURE,
+            vaporization_heat=Water.VAPORIZATION_HEAT,
+            mass=Water.DENSITY * volume
         )
         if volume < 0:
             raise ValueError
-        self.mass = self.density * self.volume # kg
