@@ -1,1 +1,3 @@
 venv
+src/teapot/__pycache__/*
+src/tst.py
