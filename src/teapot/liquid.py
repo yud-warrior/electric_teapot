@@ -24,7 +24,7 @@ class Water(Liquid):
             volume: float,
             temperature: float
     ) -> None:
-        super.__init__(
+        super().__init__(
             volume=volume,
             temperature=temperature,
             density=Water.DENSITY,

@@ -45,7 +45,7 @@ class Heater:
         else:
             self._heating(max_heat_energy)
             energy -= max_heat_energy
-            self._vaporating(max(energy, self._max_vaporating_energy_delta()))
+            self._vaporating(min(energy, self._max_vaporating_energy_delta()))
 
     def _heating(self, energy_delta: float) -> None:
         sub = self.substance
