@@ -14,12 +14,10 @@ class Heater:
         self.stopped_at: datetime = None
 
     def turn_on(self) -> None:
+        self.on = True
         self.started_at = datetime.utcnow()
         self.last_observed_at: datetime = self.started_at
         self.stopped_at: datetime = None
-
-    def pause(self) -> None:
-        pass
 
     def _update(self):
         current_time = datetime.utcnow()
