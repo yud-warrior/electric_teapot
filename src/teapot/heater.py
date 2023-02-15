@@ -16,14 +16,14 @@ class Heater:
     def turn_on(self) -> None:
         self.on = True
         self.started_at = datetime.utcnow()
-        self.last_observed_at: datetime = self.started_at
-        self.stopped_at: datetime = None
+        self.last_observed_at = self.started_at
+        self.stopped_at = None
 
     def turn_off(self):
         self.on = False
-        self.started_at: datetime = None
-        self.last_observed_at: datetime = None
-        self.stopped_at: datetime = datetime.utcnow()
+        self.started_at = None
+        self.last_observed_at = None
+        self.stopped_at = datetime.utcnow()
 
     def temperature(self):
         if self.on:

@@ -15,6 +15,8 @@ class Teapot:
 
     INITIAL_TEMPERATURE = 15
     MAX_TEMPERATURE = 100
+    POWER = 2200
+    VOLUME = 1.7
 
     def __init__(self):
         self.state: TeapotState = TeapotState.OFF
