@@ -2,13 +2,19 @@ from datetime import datetime
 import asyncio
 
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, session, url_for, json
+    Blueprint,
+    flash,
+    g,
+    redirect,
+    render_template,
+    request, session,
+    url_for,
+    json
 )
 
-from flask_teapot.db import get_db
 from flask_teapot.teapot.teapot import Teapot, TeapotState, TeapotStateContext
 from flask_teapot.crud import (
-    insert_into_temperature_by_time, 
+    insert_into_temperature_by_time,
     insert_into_teapot_state,
     read_last_state,
     read_last_temperature,
@@ -18,6 +24,7 @@ bp = Blueprint('electricteapot', __name__)
 
 task: asyncio.Task = None
 teapot: Teapot = None
+water_rel_volume = 1
 
 
 async def state_ctx_receiver(ctx: TeapotStateContext) -> None:
@@ -51,11 +58,17 @@ async def state():
     return {'state': state.name}
 
 
+@bp.route("/relvolume")
+def relvolume():
+    global water_rel_volume
+    return {'relvolume': water_rel_volume}
+
+
 @bp.route("/temperature")
 async def temperature():
     temperature = await read_last_temperature()
     if temperature is None:
-        return {'temperature': 'no data'}
+        return {'temperature': Teapot.INITIAL_TEMPERATURE}
     return {'temperature': temperature}
 
 
@@ -63,9 +76,10 @@ async def temperature():
 async def turnon():
     global teapot
     global task
+    global water_rel_volume
     if teapot is None or teapot.state == TeapotState.OFF:
         teapot = Teapot()
-        teapot.fill_with_water(1)
+    teapot.fill_with_water(water_rel_volume)
     if task is None:
         task = teapot.turn_on()
         await task
@@ -86,3 +100,15 @@ def turnoff():
         return {'message': 'teapot has already turned off'}
     task.cancel()
     return {'message': ''}
+
+
+@bp.route("/getrelvolume", methods=['GET', 'POST'])
+def getrelvolume():
+    if request.method == 'POST':
+        global water_rel_volume
+        val = float(request.form['relvolume'])
+        if 0 < val <= 1:
+            water_rel_volume = val
+        return render_template('electricteapot/electricteapot.html')
+    else:
+        return render_template('electricteapot/electricteapot.html')
