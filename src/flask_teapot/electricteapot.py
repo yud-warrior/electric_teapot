@@ -11,6 +11,7 @@ from flask_teapot.crud import (
     insert_into_temperature_by_time, 
     insert_into_teapot_state,
     read_last_state,
+    read_last_temperature,
 )
 
 bp = Blueprint('electricteapot', __name__)
@@ -21,12 +22,17 @@ teapot: Teapot = None
 
 async def state_ctx_receiver(ctx: TeapotStateContext) -> None:
     await insert_into_temperature_by_time(ctx.temperature, ctx.time)
+
+
+async def changed_state_ctx_receiver(ctx: TeapotStateContext) -> None:
     await insert_into_teapot_state(ctx.state, ctx.time)
 
+
 Teapot.STATE_CTX_RECEIVER = state_ctx_receiver
+Teapot.CHANGED_STATE_CTX_RECEIVER = changed_state_ctx_receiver
 
 
-@bp.route("/electricteapot")
+@bp.route("/")
 def electricteapot():
     return render_template('electricteapot/electricteapot.html')
 
@@ -43,6 +49,14 @@ async def state():
     if state is None:
         return {'state': 'no state'}
     return {'state': state.name}
+
+
+@bp.route("/temperature")
+async def temperature():
+    temperature = await read_last_temperature()
+    if temperature is None:
+        return {'temperature': 'no data'}
+    return {'temperature': temperature}
 
 
 @bp.route("/turnon")

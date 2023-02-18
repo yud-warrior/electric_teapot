@@ -35,6 +35,20 @@
         );
       }
 
+      async function promiseTemperature() {
+        let url = "/temperature";
+        let response = await fetch(url);
+        let msg = await response.json();
+        return msg.temperature;
+      }
+
+      function getTemperature() {
+        promiseTemperature().then(
+          function(value) {document.getElementById("temperature").innerHTML = value;},
+          function(error) {document.getElementById("temperature").innerHTML = error;}
+        );
+      }
+
       async function promiseTurnOn() {
         let url = "/turnon";
         let response = await fetch(url);
@@ -69,7 +83,7 @@
         <div class="row mb-3 text-center">
             <div class="col-md-4 themed-grid-col">
               <p>temperature:</p>
-              <p id="temperature">100</p>
+              <p id="temperature"></p>
             </div>
             <div class="col-md-4 themed-grid-col">
               <p>time:</p>
@@ -94,8 +108,9 @@
         </div>
   </div>
     <script>
-      //setInterval(getTime, 1000);
-      setInterval(getState, 5000);
+      setInterval(getTime, 1000);
+      setInterval(getTemperature, 1000);
+      setInterval(getState, 3000);
     </script>
   </body>
 </html>
