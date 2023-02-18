@@ -13,6 +13,7 @@ from flask import (
 )
 
 from flask_teapot.teapot.teapot import Teapot, TeapotState, TeapotStateContext
+import flask_teapot.teapot.config as teapot_config
 from flask_teapot.crud import (
     insert_into_temperature_by_time,
     insert_into_teapot_state,
@@ -21,10 +22,6 @@ from flask_teapot.crud import (
 )
 
 bp = Blueprint('electricteapot', __name__)
-
-task: asyncio.Task = None
-teapot: Teapot = None
-water_rel_volume = 1
 
 
 async def state_ctx_receiver(ctx: TeapotStateContext) -> None:
@@ -35,8 +32,21 @@ async def changed_state_ctx_receiver(ctx: TeapotStateContext) -> None:
     await insert_into_teapot_state(ctx.state, ctx.time)
 
 
-Teapot.STATE_CTX_RECEIVER = state_ctx_receiver
-Teapot.CHANGED_STATE_CTX_RECEIVER = changed_state_ctx_receiver
+def setup_teapot():
+    Teapot.INITIAL_TEMPERATURE = teapot_config.INITIAL_TEMPERATURE
+    Teapot.MAX_TEMPERATURE = teapot_config.MAX_TEMPERATURE
+    Teapot.TEMPERATURE_PRECISION = teapot_config.TEMPERATURE_PRECISION
+    Teapot.POWER = teapot_config.POWER
+    Teapot.VOLUME = teapot_config.VOLUME
+    Teapot.SENSOR_TIMEDELTA = teapot_config.SENSOR_TIMEDELTA
+    Teapot.STATE_CTX_RECEIVER = state_ctx_receiver
+    Teapot.CHANGED_STATE_CTX_RECEIVER = changed_state_ctx_receiver
+
+
+setup_teapot()
+task: asyncio.Task = None
+teapot: Teapot = None
+water_rel_volume = 1
 
 
 @bp.route("/")
