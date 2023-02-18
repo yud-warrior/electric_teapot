@@ -1,5 +1,6 @@
 from enum import Enum
-
+from dataclasses import dataclass
+import asyncio
 
 from teapot.liquid import Liquid, Water
 from teapot.heater import Heater
@@ -12,6 +13,13 @@ class TeapotState(Enum):
     STOPPED = 4
 
 
+@dataclass
+class TeapotStateContext:
+    state: TeapotState
+    temperature: float
+    time: str
+
+
 class Teapot:
 
     INITIAL_TEMPERATURE = 15
@@ -19,6 +27,8 @@ class Teapot:
     TEMPERATURE_PRECISION = 2  # digits after floating point
     POWER = 2200
     VOLUME = 1.7
+    SENSOR_TIMEDELTA = 1  # seconds
+    STATE_CTX_RECEIVER = None
 
     def __init__(self):
         self.state: TeapotState = TeapotState.OFF
@@ -26,6 +36,7 @@ class Teapot:
         self.temperature: float = Teapot.INITIAL_TEMPERATURE
         self.liquid: Liquid = None
         self.heater: Heater = None
+        self.state_ctx_receiver: asyncio.coroutine = Teapot.STATE_CTX_RECEIVER
 
     def fill_with_water(self, rel_volume: float) -> None:
         if rel_volume < 0 or rel_volume > 1:
@@ -34,16 +45,26 @@ class Teapot:
         volume = rel_volume * Teapot.VOLUME
         self.liquid = Water(volume, Teapot.INITIAL_TEMPERATURE)
 
-    def turn_on(self):
+    def turn_on(self) -> asyncio.Task:
         self.state = TeapotState.ON
         self.heater = Heater(self.liquid, Teapot.POWER)
         self.heater.turn_on()
-        self.work()
+        task = asyncio.create_task(self.work())
+        return task
 
-    def work(self):
+    async def work(self):
         t = self.heater.temperature()
         while not self._turn_off_temperature(t):
-            pass  # todo
+            try:
+                str_time = self.heater.last_observed_at.strftime('%F %T.%f')
+                ctx = TeapotStateContext(self.state, t, str_time)
+                await self.state_ctx_receiver(ctx)
+                await asyncio.sleep(Teapot.SENSOR_TIMEDELTA)
+                t = self.heater.temperature()
+            except asyncio.CancelledError:
+                self.heater.turn_off()
+                self.state = TeapotState.OFF
+                break
 
     def _turn_off_temperature(temperature: float):
         rounded_t = round(temperature, Teapot.TEMPERATURE_PRECISION)

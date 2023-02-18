@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electric teapot</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    
+    <script>
+      async function promiseTime() {
+        let url = "/time";
+        let response = await fetch(url);
+        let msg = await response.json();
+        return msg.time;
+      }
+      function getTime() {
+        promiseTime().then(
+          function(value) {document.getElementById("time").innerHTML = value;},
+          function(error) {alert(error)}
+        );
+      }
+    </script>
+  </head>
+  <body>
+    <div class="container">
+        <div class="row mb-3 text-center">
+            <div class="col-md-4 themed-grid-col">
+              <p>temperature:</p>
+              <p id="temperature">100</p>
+            </div>
+            <div class="col-md-4 themed-grid-col">
+              <p>time:</p>
+              <p id="time"></p>
+            </div>
+            <div class="col-md-4 themed-grid-col">state</div>
+          </div>
+    </div>
+    <script>
+      setInterval(getTime, 1000);
+    </script>
+  </body>
+</html>
