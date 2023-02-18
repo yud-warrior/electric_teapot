@@ -3,13 +3,13 @@ from dataclasses import dataclass
 
 @dataclass
 class Liquid:
-    volume: float # litres
-    temperature: float # degree Celsius
-    density: float # kq/ m**3
-    heat_capacity: float # J/(kg * K)
-    boiling_temperature: float # degree Celsius
-    vaporization_heat: float # J/(kg * K)
-    mass: float # kg
+    volume: float  # litres
+    temperature: float  # degree Celsius
+    density: float  # kq/ m**3
+    heat_capacity: float  # J/(kg * K)
+    boiling_temperature: float  # degree Celsius
+    vaporization_heat: float  # J/(kg * K)
+    mass: float  # kg
 
 
 class Water(Liquid):

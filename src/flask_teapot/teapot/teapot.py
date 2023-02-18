@@ -16,6 +16,7 @@ class Teapot:
 
     INITIAL_TEMPERATURE = 15
     MAX_TEMPERATURE = 100
+    TEMPERATURE_PRECISION = 2  # digits after floating point
     POWER = 2200
     VOLUME = 1.7
 
@@ -24,6 +25,7 @@ class Teapot:
         self.rel_volume: float = 0.
         self.temperature: float = Teapot.INITIAL_TEMPERATURE
         self.liquid: Liquid = None
+        self.heater: Heater = None
 
     def fill_with_water(self, rel_volume: float) -> None:
         if rel_volume < 0 or rel_volume > 1:
@@ -34,5 +36,15 @@ class Teapot:
 
     def turn_on(self):
         self.state = TeapotState.ON
-        heater = Heater(self.liquid, Teapot.POWER)
-        heater.turn_on()
+        self.heater = Heater(self.liquid, Teapot.POWER)
+        self.heater.turn_on()
+        self.work()
+
+    def work(self):
+        t = self.heater.temperature()
+        while not self._turn_off_temperature(t):
+            pass  # todo
+
+    def _turn_off_temperature(temperature: float):
+        rounded_t = round(temperature, Teapot.TEMPERATURE_PRECISION)
+        return rounded_t >= Teapot.MAX_TEMPERATURE

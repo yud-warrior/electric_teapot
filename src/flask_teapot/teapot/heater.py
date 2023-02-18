@@ -50,7 +50,7 @@ class Heater:
     def _heating(self, energy_delta: float) -> None:
         sub = self.substance
         sub.temperature += energy_delta / (sub.heat_capacity * sub.mass)
-    
+
     def _max_heating_energy_delta(self) -> float:
         sub = self.substance
 
@@ -60,7 +60,7 @@ class Heater:
     def _vaporating(self, energy_delta: float) -> None:
         sub = self.substance
         sub.mass -= energy_delta / sub.vaporization_heat
-    
+
     def _max_vaporating_energy_delta(self) -> float:
         sub = self.substance
 
