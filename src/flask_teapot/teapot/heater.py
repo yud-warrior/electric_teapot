@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from teapot.liquid import Liquid
+from flask_teapot.teapot.liquid import Liquid
 
 
 class Heater:

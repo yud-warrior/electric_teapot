@@ -13,10 +13,25 @@
         let msg = await response.json();
         return msg.time;
       }
+
       function getTime() {
         promiseTime().then(
           function(value) {document.getElementById("time").innerHTML = value;},
-          function(error) {alert(error)}
+          function(error) {document.getElementById("time").innerHTML = error;}
+        );
+      }
+
+      async function promiseState() {
+        let url = "/state";
+        let response = await fetch(url);
+        let msg = await response.json();
+        return msg.state;
+      }
+
+      function getState() {
+        promiseState().then(
+          function(value) {document.getElementById("state").innerHTML = value;},
+          function(error) {document.getElementById("state").innerHTML = error;}
         );
       }
     </script>
@@ -32,11 +47,15 @@
               <p>time:</p>
               <p id="time"></p>
             </div>
-            <div class="col-md-4 themed-grid-col">state</div>
+            <div class="col-md-4 themed-grid-col">
+              <p>state:</p>
+              <p id="state"></p>
+            </div>
           </div>
     </div>
     <script>
       setInterval(getTime, 1000);
+      setInterval(getState, 5000);
     </script>
   </body>
 </html>

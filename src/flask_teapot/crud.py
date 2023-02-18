@@ -1,5 +1,5 @@
-from teapot.teapot import TeapotState
-from db import get_db
+from flask_teapot.teapot.teapot import TeapotState
+from flask_teapot.db import get_db
 
 
 teapot_state_names = {
@@ -33,8 +33,8 @@ async def insert_into_teapot_state(
 
 
 async def read_last_state() -> TeapotState:
-    query = "SELECT * FROM teapot_state" \
-        + "WHERE time = (SELECT MAX(time) FROM teapot_state);"
+    query = "SELECT state, time FROM teapot_state" \
+        + " WHERE time = (SELECT MAX(time) FROM teapot_state);"
     db = await get_db()
     result = []
     async with db.execute(query) as cursor:
@@ -48,7 +48,7 @@ async def read_last_state() -> TeapotState:
 
 async def read_last_temperature() -> float:
     query = "SELECT * FROM temperature_by_time" \
-        + "WHERE time = (SELECT MAX(time) FROM temperature_by_time);"
+        + " WHERE time = (SELECT MAX(time) FROM temperature_by_time);"
     db = await get_db()
     result = []
     async with db.execute(query) as cursor:

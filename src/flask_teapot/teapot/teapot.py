@@ -2,8 +2,8 @@ from enum import Enum
 from dataclasses import dataclass
 import asyncio
 
-from teapot.liquid import Liquid, Water
-from teapot.heater import Heater
+from flask_teapot.teapot.liquid import Liquid, Water
+from flask_teapot.teapot.heater import Heater
 
 
 class TeapotState(Enum):
