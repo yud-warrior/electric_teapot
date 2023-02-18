@@ -40,7 +40,6 @@ async def read_last_state() -> TeapotState:
     async with db.execute(query) as cursor:
         async for row in cursor:
             result.append(row['state'])
-            print(row['state'])
     if result:
         return teapot_state_names[result[0]]
 

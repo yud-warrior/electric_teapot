@@ -25,7 +25,7 @@ class Teapot:
     INITIAL_TEMPERATURE = 15
     MAX_TEMPERATURE = 100
     TEMPERATURE_PRECISION = 2  # digits after floating point
-    POWER = 8000  # 2200
+    POWER = 10000  # 2200
     VOLUME = 1.7
     SENSOR_TIMEDELTA = 1  # seconds
     STATE_CTX_RECEIVER = None
@@ -58,25 +58,29 @@ class Teapot:
         while not self._turn_off_temperature(t):
             try:
                 asyncio.create_task(self.send_ctx(t))
-                print(t)
                 await asyncio.sleep(Teapot.SENSOR_TIMEDELTA)
                 t = self.heater.temperature()
             except asyncio.CancelledError:
                 self.state = TeapotState.OFF
-                await self.send_ctx(t)
                 self.heater.turn_off()
+                await self.send_ctx(t)
                 return
 
         self.state = TeapotState.BOILED_UP
         await self.send_ctx(t)
 
-        await asyncio.sleep(0.01)
+        self.heater.turn_off()
+        await asyncio.sleep(0.1)
 
         self.state = TeapotState.OFF
         await self.send_ctx(t)
 
     async def send_ctx(self, temperature: float) -> None:
-        str_time = self.heater.last_observed_at.strftime('%F %T.%f')
+        if self.state == TeapotState.OFF:
+            time = self.heater.stopped_at
+        else:
+            time = self.heater.last_observed_at
+        str_time = time.strftime('%F %T.%f')
         ctx = TeapotStateContext(self.state, temperature, str_time)
         await self.state_ctx_receiver(ctx)
 

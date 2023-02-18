@@ -39,8 +39,6 @@ def time():
 
 @bp.route("/state")
 async def state():
-    if task is not None:
-        print(task)
     state = await read_last_state()
     if state is None:
         return {'state': 'no state'}
@@ -52,17 +50,14 @@ async def turnon():
     global teapot
     global task
     if teapot is None or teapot.state == TeapotState.OFF:
-        Teapot.STATE_CTX_RECEIVER = state_ctx_receiver
         teapot = Teapot()
         teapot.fill_with_water(1)
     if task is None:
-        # loop = asyncio.get_event_loop()
-        # task = loop.create_task(teapot.turn_on())
         task = teapot.turn_on()
         await task
         teapot.state = TeapotState.OFF
         task = None
-        return {'message': 'ok'}
+        return {'message': ''}
     return {'message': 'teapot has already turned on'}
 
 
@@ -76,4 +71,4 @@ def turnoff():
         task = None
         return {'message': 'teapot has already turned off'}
     task.cancel()
-    return {'message': 'ok'}
+    return {'message': ''}

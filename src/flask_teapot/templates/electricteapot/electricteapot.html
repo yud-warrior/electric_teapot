@@ -68,10 +68,6 @@
     <div class="container">
         <div class="row mb-3 text-center">
             <div class="col-md-4 themed-grid-col">
-              <button onclick="TurnOn()">Turn on</button>
-              <p id="turnon msg"></p>
-            </div>
-            <div class="col-md-4 themed-grid-col">
               <p>temperature:</p>
               <p id="temperature">100</p>
             </div>
@@ -83,12 +79,20 @@
               <p>state:</p>
               <p id="state"></p>
             </div>
-            <div class="col-md-4 themed-grid-col">
-              <button onclick="TurnOff()">Turn off</button>
-              <p id="turnoff msg"></p>
-            </div>
           </div>
     </div>
+    <div class="container">
+      <div class="row mb-3 text-center">
+          <div class="col-md-4 themed-grid-col">
+            <button onclick="TurnOn()">Turn on</button>
+            <p id="turnon msg"></p>
+          </div>
+          <div class="col-md-4 themed-grid-col">
+            <button onclick="TurnOff()">Turn off</button>
+            <p id="turnoff msg"></p>
+          </div>
+        </div>
+  </div>
     <script>
       //setInterval(getTime, 1000);
       setInterval(getState, 5000);
