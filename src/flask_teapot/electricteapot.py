@@ -20,10 +20,8 @@ teapot: Teapot = None
 
 
 async def state_ctx_receiver(ctx: TeapotStateContext) -> None:
-    asyncio.create_task(
-        insert_into_temperature_by_time(ctx.temperature, ctx.time)
-    )
-    asyncio.create_task(insert_into_teapot_state(ctx.state, ctx.time))
+    await insert_into_temperature_by_time(ctx.temperature, ctx.time)
+    await insert_into_teapot_state(ctx.state, ctx.time)
 
 Teapot.STATE_CTX_RECEIVER = state_ctx_receiver
 
@@ -41,6 +39,8 @@ def time():
 
 @bp.route("/state")
 async def state():
+    if task is not None:
+        print(task)
     state = await read_last_state()
     if state is None:
         return {'state': 'no state'}
@@ -48,13 +48,20 @@ async def state():
 
 
 @bp.route("/turnon")
-def turnon():
+async def turnon():
     global teapot
     global task
-    if teapot is None:
+    if teapot is None or teapot.state == TeapotState.OFF:
+        Teapot.STATE_CTX_RECEIVER = state_ctx_receiver
         teapot = Teapot()
+        teapot.fill_with_water(1)
     if task is None:
+        # loop = asyncio.get_event_loop()
+        # task = loop.create_task(teapot.turn_on())
         task = teapot.turn_on()
+        await task
+        teapot.state = TeapotState.OFF
+        task = None
         return {'message': 'ok'}
     return {'message': 'teapot has already turned on'}
 

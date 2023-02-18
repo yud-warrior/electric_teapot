@@ -22,12 +22,12 @@ async def insert_into_temperature_by_time(
 
 
 async def insert_into_teapot_state(
-        state: TeapotState, 
+        state: TeapotState,
         time_at: str
 ) -> None:
     db = await get_db()
     query = "INSERT INTO teapot_state (state, time)" \
-        + f" VALUES ({state.name}, '{time_at}');"
+        + f" VALUES ('{state.name}', '{time_at}');"
     await db.execute(query)
     await db.commit()
 
@@ -40,6 +40,7 @@ async def read_last_state() -> TeapotState:
     async with db.execute(query) as cursor:
         async for row in cursor:
             result.append(row['state'])
+            print(row['state'])
     if result:
         return teapot_state_names[result[0]]
 

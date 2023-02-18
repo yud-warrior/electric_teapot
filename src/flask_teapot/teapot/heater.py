@@ -55,7 +55,7 @@ class Heater:
         sub = self.substance
 
         return sub.heat_capacity * sub.mass \
-               * (sub.boiling_temperature - sub.temperature)
+            * (sub.boiling_temperature - sub.temperature)
 
     def _vaporating(self, energy_delta: float) -> None:
         sub = self.substance
